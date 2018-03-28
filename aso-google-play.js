@@ -9,7 +9,6 @@
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @connect      appbrain.com
 // @license      MIT
-// @updateURL    https://raw.githubusercontent.com/ayoubfletcher/ASO-Google-Play/master/aso-google-play.js
 // @downloadURL  https://raw.githubusercontent.com/ayoubfletcher/ASO-Google-Play/master/aso-google-play.js
 // ==/UserScript==
 
