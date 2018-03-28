@@ -28,7 +28,7 @@ function extractField(selector) {
 function getApp() {
     // Initialize params
     const package_name = location.href.split("?id=")[1].split("&")[0];
-    const developer = $(document).find("div[itemprop='author'] meta[itemprop='url']").attr("content").split("?id=")[1];
+    const developer = const developer = $(document).find("div[itemprop='author'] span[itemprop='name'").text();
     // Initialize containers
     var app = {};
     var dev = {};
