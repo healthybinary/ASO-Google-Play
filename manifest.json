@@ -10,7 +10,7 @@
   "content_scripts": [
     {
       "matches": ["https://play.google.com/store/apps/*"],
-      "js": ["thirds/jquery.min.js", "content.js"]
+      "js": ["jquery.min.js", "content.js"]
     }
   ],
   "browser_action": {
