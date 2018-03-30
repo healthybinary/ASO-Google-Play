@@ -63,7 +63,6 @@ function getApp() {
         };
         // Get developer information
         getHttpRequest(dev_barin_url+developer, function(result) {
-            console.log(dev_barin_url+developer);
             let data = $(result).find(".infotiles");
             // extract the data of developer
             dev = {
