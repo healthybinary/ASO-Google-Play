@@ -9,6 +9,7 @@
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @connect      appbrain.com
 // @downloadURL  https://github.com/ayoubfletcher/ASO-Google-Play/raw/master/aso-google-play.user.js
+// @updateURL  https://github.com/ayoubfletcher/ASO-Google-Play/raw/master/aso-google-play.user.js
 // ==/UserScript==
 
 (function() {
