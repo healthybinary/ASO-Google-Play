@@ -117,7 +117,7 @@ function injectData(app, developer) {
     data_html = data_html.replace("{%TOTAL_RATING%}", developer.total_rating);
 
     // Inject result
-    elemTarget = $('h1').parent().parent();
+    const elemTarget = $('h1').parent().parent()[0];
     $(data_html).insertAfter(elemTarget);
 }
 
