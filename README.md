@@ -11,5 +11,5 @@
   
 2. install:
 	* Install a script directly from GitHub by clicking on the "install" link in the table below.
-  ASO Google Play - [INSTALL](https://raw.githubusercontent.com/ayoubfletcher/ASO-Google-Play/master/aso-google-play.js)
+  ASO Google Play - [INSTALL](https://github.com/ayoubfletcher/ASO-Google-Play/raw/master/aso-google-play.user.js)
  
