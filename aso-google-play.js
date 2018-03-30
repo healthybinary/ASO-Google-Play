@@ -1,15 +1,14 @@
 // ==UserScript==
 // @name         ASO Google Play
 // @namespace    https://github.com/ayoubfletcher
-// @version      1.0
+// @version      1.1
 // @description  Your tool kit to speed up your aso abilities.
 // @author       Ayoub Fletcher
 // @match        https://play.google.com/store/apps/details?id=*
 // @grant        GM_xmlhttpRequest
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @connect      appbrain.com
-// @license      MIT
-// @downloadURL  https://raw.githubusercontent.com/ayoubfletcher/ASO-Google-Play/master/aso-google-play.js
+// @downloadURL  https://github.com/ayoubfletcher/ASO-Google-Play/raw/master/aso-google-play.user.js
 // ==/UserScript==
 
 (function() {
@@ -46,7 +45,7 @@ function extractField(selector) {
 function getApp() {
     // Initialize params
     const package_name = location.href.split("?id=")[1].split("&")[0];
-    const developer = $(document).find("div[itemprop='author'] span[itemprop='name'").text();
+    const developer = $($('a[itemprop="genre"]').parent().parent().find('a')[0]).text();
     // Initialize containers
     var app = {};
     var dev = {};
@@ -82,13 +81,21 @@ function getApp() {
 
 // Get Short description of the app
 function shortDescription() {
-    const metaTags = document.getElementsByTagName('meta');
-    for(let i = 0; i < metaTags.length; i++) {
-        if(metaTags[i].getAttribute('name') == 'description') {
-            return metaTags[i].getAttribute('content');
+    const metas = document.getElementsByTagName('meta');
+    const scripts = document.getElementsByTagName('script');
+    // Check if description was protected
+    for(var i=0; i < scripts.length; i++) {
+        if(scripts[i].innerHTML.indexOf("key: 'ds:3', isError:  false") > 0) {
+            var scriptBlock = scripts[i].innerHTML.split(",[null,");
+            return scriptBlock[1].substring(1, scriptBlock[1].indexOf('"]'));
         }
     }
-    return "";
+    // Get description if was on metas
+    for(let i = 0; i < metas.length; i++) {
+        if(metas[i].getAttribute('name') == 'description') {
+            return metas[i].getAttribute('content');
+        }
+    }
 }
 
 // Inject data
@@ -109,7 +116,7 @@ function injectData(app, developer) {
     data_html = data_html.replace("{%TOTAL_RATING%}", developer.total_rating);
 
     // Inject result
-    const elemTarget = $('.info-box-top .document-subtitles')[1];
+    elemTarget = $('h1').parent().parent();
     $(data_html).insertAfter(elemTarget);
 }
 
