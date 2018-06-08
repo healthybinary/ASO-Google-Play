@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASO Google Play
 // @namespace    https://github.com/ayoubfletcher
-// @version      1.1
+// @version      1.2
 // @description  Your tool kit to speed up your aso abilities.
 // @author       Ayoub Fletcher
 // @match        https://play.google.com/store/apps/details?id=*
@@ -86,7 +86,7 @@ function shortDescription() {
     const scripts = document.getElementsByTagName('script');
     // Check if description was protected
     for(var i=0; i < scripts.length; i++) {
-        if(scripts[i].innerHTML.indexOf("key: 'ds:3', isError:  false") > 0) {
+        if(scripts[i].innerHTML.indexOf("key: 'ds:4', isError:  false") > 0) {
             var scriptBlock = scripts[i].innerHTML.split(",[null,");
             return scriptBlock[1].substring(1, scriptBlock[1].indexOf('"]'));
         }
@@ -102,7 +102,8 @@ function shortDescription() {
 // Inject data
 function injectData(app, developer) {
     // Initialize data
-    data_html = date_template.replace("{%SHORT_DESCRIPTION%}", shortDescription());
+    //console.log(shortDescription());
+    let data_html = date_template.replace("{%SHORT_DESCRIPTION%}", shortDescription());
     data_html = data_html.replace("{%APP_INSTALLS%}", app.installs);
     data_html = data_html.replace("{%APP_AGE%}", app.age);
     data_html = data_html.replace("{%RANKING%}", app.ranking);
