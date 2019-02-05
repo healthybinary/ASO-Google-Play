@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASO Google Play
 // @namespace    https://github.com/ayoubfletcher
-// @version      2.0
+// @version      2.1
 // @description  Your tool kit to speed up your aso abilities.
 // @author       Ayoub Fletcher
 // @match        https://play.google.com/store/apps/details?id=*
@@ -9,7 +9,7 @@
 // @require      http://code.jquery.com/jquery-1.12.4.min.js
 // @connect      appbrain.com
 // @downloadURL  https://github.com/ayoubfletcher/ASO-Google-Play/raw/master/aso-google-play.user.js
-// @updateURL  https://github.com/ayoubfletcher/ASO-Google-Play/raw/master/aso-google-play.user.js
+// @updateURL    https://github.com/ayoubfletcher/ASO-Google-Play/raw/master/aso-google-play.user.js
 // ==/UserScript==
 
 
@@ -37,11 +37,7 @@
  *******************************************************************************************************************************/
 
 /**
- * @Note If you have a problem running the script try turn off the short_description may solve the issue
- * because google play developers keep changing the tags and stuff time to time so it will break the script,
- * so i added those controls to prevent the script from breaking completly till i release an update to it,
- * and to give you a full control of the script.
- * For faster responds consider disabling developers information or app information, or whatever you are free.
+ * @Note For faster responds consider disabling developers information or app information, or whatever you are free.
  */
 /**
  * Parameters to toggle the extraction of the fields
@@ -77,8 +73,8 @@ const INTERVAL_TIMER_CHECKER = 500;
  * HTML Template for styling and showing the elements
  * If you want to style just do it
  */
-const styles_html = "<style>#aso-data{padding: 10px 0;}#aso-data i{margin-top: 10px;}#aso-data-loading{padding: 10px; text-align: center; margin-bottom: 10px; font-weight: bold;}#aso-data i a{color: #546e7a; font-weight: bold; -webkit-transition: all 200ms; /* Safari */ transition: all 200ms;}#aso-data i a:hover{color: #29434e;}#aso-data li{display: inline-block; width: 110px; margin-right: 10px; margin-bottom: 10px; background: #F7F7F7}.icon{height: 50px; background-position: 50% 50%; background-repeat: no-repeat; background-size: contain; position: relative}.app-age{background-color: #04B5B0; background-image: url('https://www.appbrain.com/static/images/infotile-age.png')}.app-installs{background-color: #069bf7; background-image: url('https://www.appbrain.com/static/images/infotile-download.png')}.app-ranking{background-color: #F4460A; background-position: 0 50%; background-image: url('https://www.appbrain.com/static/images/infotile-ranking.png')}.app-size{background-color: #EA6E00; background-image: url('https://www.appbrain.com/static/images/infotile-size.png')}.app-update{background-color: #e6a509; background-image: url('https://www.appbrain.com/static/images/infotile-update.png')}.app-android{background-color: #EB008B; background-image: url('https://www.appbrain.com/static/images/infotile-android.png')}.dev-age{background-color: #1E88E5; background-image: url('https://www.appbrain.com/static/images/infotile-age.png')}.dev-total-installs{background-color: #E65100; background-image: url('https://www.appbrain.com/static/images/infotile-download.png')}.dev-total-apps{background-color: #EB008B; background-image: url('https://www.appbrain.com/static/images/infotile-appcount.png')}.dev-average-rating{background-color: #80af3f; background-image: url('https://www.appbrain.com/static/images/infotile-rating.png')}.dev-recent-rating{background-color: #80af3f; background-image: url('https://www.appbrain.com/static/images/infotile-recent-rating.png')}.dev-total-rating{background-color: #80af3f; background-image: url('https://www.appbrain.com/static/images/infotile-rating-count.png')}#aso-data .value{text-align: center; padding: 15px 5px; font-family: Arial; font-size: 15px; font-weight: bold; color: #666}#aso-data .title{text-align: center; padding: 5px; font-family: Arial; font-size: 13px; color: #999; border-top: 1px solid #E1E1E1}#aso-data .header{font-size: 18px; padding: 20px 10px; color: #666; text-transform: uppercase; font-family: Arial; font-weight: bold}#description{width: 100%; float: left; margin-bottom: 20px}#description .content{color: #fff; padding: 10px; background: #666; font-family: Arial; font-size: 15px; text-align: center}#download_apk{font-size: 14px; height: 36px; line-height: 34px; padding: 0 20px; -webkit-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: 0 1px 0 rgba(0,0,0,0.05); box-shadow: 0 1px 0 rgba(0,0,0,0.05); -webkit-box-sizing: border-box; box-sizing: border-box; -webkit-transition: all .2s; transition: all .2s; -webkit-user-select: none; background-color: #fff; border: 1px solid rgba(0,0,0,0.17); color: #ffffff; cursor: pointer; display: inline-block; font-family: 'Roboto',sans-serif; font-size: 14px; font-style: normal; font-weight: 500; height: 36px; line-height: 34px; min-width: 40px; padding: 0 20px; position: relative; text-align: center; text-decoration: none; white-space: nowrap; vertical-align: middle; background-color: #546e7a;}#download_apk:hover{-webkit-box-shadow: 0 1px 0 0 rgba(0,0,0,0.27); box-shadow: 0 1px 0 0 rgba(0,0,0,0.27); cursor: pointer; background-color: #29434e;}#aso-feature-image{padding-bottom: 20px; text-align: center;}#aso-feature-image i{display: block; margin-bottom: 10px; font-weight: bold;}</style>";
-const aso_html_template = styles_html + "<div id='aso-data'>{%DATA_HTML%} <i>Made by <a href='https://github.com/ayoubfletcher/ASO-Google-Play'>Ayoub Fletcher</a> with LOVE ❤️.</i></div>";
+const styles_html = "<style>#aso-data{padding: 10px 0; text-align: center;}#aso-data i{margin-top: 10px;}#aso-data-loading{padding: 10px; text-align: center; margin-bottom: 10px; font-weight: bold;}#honor{color: #2c1912;}#aso-data i a{color: #546e7a; font-weight: bold; -webkit-transition: all 200ms; /* Safari */ transition: all 200ms;}#aso-data i a:hover{color: #29434e;}#app-data, #dev-data{text-align: center; padding: 5px;}#aso-data li{display: inline-block; width: 110px; margin: 0 3px; margin-bottom: 10px; background: #F7F7F7}.icon{height: 50px; background-position: 50% 50%; background-repeat: no-repeat; background-size: contain; position: relative}.app-age{background-color: #04B5B0; background-image: url('https://www.appbrain.com/static/images/infotile-age.png')}.app-installs{background-color: #069bf7; background-image: url('https://www.appbrain.com/static/images/infotile-download.png')}.app-ranking{background-color: #F4460A; background-position: 0 50%; background-image: url('https://www.appbrain.com/static/images/infotile-ranking.png')}.app-size{background-color: #EA6E00; background-image: url('https://www.appbrain.com/static/images/infotile-size.png')}.app-update{background-color: #e6a509; background-image: url('https://www.appbrain.com/static/images/infotile-update.png')}.app-android{background-color: #EB008B; background-image: url('https://www.appbrain.com/static/images/infotile-android.png')}.dev-age{background-color: #1E88E5; background-image: url('https://www.appbrain.com/static/images/infotile-age.png')}.dev-total-installs{background-color: #E65100; background-image: url('https://www.appbrain.com/static/images/infotile-download.png')}.dev-total-apps{background-color: #EB008B; background-image: url('https://www.appbrain.com/static/images/infotile-appcount.png')}.dev-average-rating{background-color: #80af3f; background-image: url('https://www.appbrain.com/static/images/infotile-rating.png')}.dev-recent-rating{background-color: #80af3f; background-image: url('https://www.appbrain.com/static/images/infotile-recent-rating.png')}.dev-total-rating{background-color: #80af3f; background-image: url('https://www.appbrain.com/static/images/infotile-rating-count.png')}#aso-data .value{text-align: center; padding: 15px 5px; font-family: Arial; font-size: 12px; font-weight: bold; color: #666}#aso-data .title{text-align: center; padding: 5px; font-family: Arial; font-size: 13px; color: #999; border-top: 1px solid #E1E1E1}#aso-data .header{font-size: 18px; padding: 20px 10px; color: #666; text-transform: uppercase; font-family: Arial; font-weight: bold}#description{width: 100%; float: left; margin-bottom: 20px;}#description .content{color: #fff; padding: 10px; background: #666; font-family: Arial; font-size: 15px; text-align: center}#download_apk{font-size: 14px; height: 36px; line-height: 34px; padding: 0 20px; -webkit-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05); -webkit-box-sizing: border-box; box-sizing: border-box; -webkit-transition: all .2s; transition: all .2s; -webkit-user-select: none; background-color: #fff; border: 1px solid rgba(0, 0, 0, 0.17); color: #ffffff; cursor: pointer; display: inline-block; font-family: 'Roboto', sans-serif; font-size: 14px; font-style: normal; font-weight: 500; height: 36px; line-height: 34px; min-width: 40px; padding: 0 20px; position: relative; text-align: center; text-decoration: none; white-space: nowrap; vertical-align: middle; background-color: #546e7a;}#download_apk:hover{-webkit-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.27); box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.27); cursor: pointer; background-color: #29434e;}#aso-feature-image{padding-bottom: 20px; text-align: center;}#aso-feature-image i{display: block; margin-bottom: 10px; font-weight: bold;}</style>";
+const aso_html_template = "<div id='aso-data'>{%DATA_HTML%} <i>Made by <a href='https://github.com/ayoubfletcher/ASO-Google-Play'>Ayoub Fletcher</a> with LOVE ❤️.</i><p>Honorable Mention <b id='honor'>Re-skinning</b> 🕷️.</p></div>";
 const desc_html_template = "<ul id='description'><div class='content'>{%SHORT_DESCRIPTION%}</div></ul>";
 const aso_html_loading_template = "<div id='aso-data-loading'>LOADING DATA 👾 ...</div>"
 const app_html_template = "<ul id='app-data'> <div class='header'> App Information</div><li> <div class='top'> <div class='icon app-installs'></div><div class='value'>{%APP_INSTALLS%}</div><div class='title'>App Installs</div></div></li><li> <div class='top'> <div class='icon app-age'></div><div class='value'>{%APP_AGE%}</div><div class='title'>App Age</div></div></li><li> <div class='top'> <div class='icon app-ranking'></div><div class='value'>{%RANKING%}</div><div class='title'>Ranking</div></div></li><li> <div class='top'> <div class='icon app-size'></div><div class='value'>{%APP_SIZE%}</div><div class='title'>App Size</div></div></li><li> <div class='top'> <div class='icon app-update'></div><div class='value'>{%LAST_UPDATE%}</div><div class='title'>Last Update</div></div></li><li> <div class='top'> <div class='icon app-android'></div><div class='value'>{%ANDROID_VERSION%}</div><div class='title'>Android Version</div></div></li></ul>";
@@ -129,8 +125,10 @@ function extractField(selector) {
 function generateASO() {
     // Inject loading
     let titleElements = $('h1');
-    const elemTarget = $(titleElements[titleElements.length-2]).parent().parent()[0];
+    const elemTarget = $(titleElements[titleElements.length-2]).parent().parent().parent().parent().parent()[0];
     const aso_html = aso_html_template.replace('{%DATA_HTML%}', aso_html_loading_template);
+    // Injecting styles
+    $(styles_html).insertAfter(elemTarget);
     $(aso_html).insertAfter(elemTarget);
     // Get the pacakge name and the developer name
     const package_name = location.href.split("?id=")[1].split("&")[0];
@@ -156,7 +154,8 @@ function generateASO() {
                         ranking: extractField(data.find(".infotile-top-ranking").parent()),
                         size: extractField(data.find(".infotile-top-size").parent()),
                         update: extractField(data.find(".infotile-top-lastupdated").parent()),
-                        android_version: extractField(data.find(".infotile-top-androidversion").parent())
+                        android_version: extractField(data.find(".infotile-top-androidversion").parent()),
+                        short_description: $(result).find('.app-short-description').text()
                     };
                 }
                 resolve();
@@ -206,6 +205,16 @@ function generateASO() {
         $('#aso-data-loading').text(app_not_found_msg);
         injectData(app, dev, package_name);
     })
+}
+
+/**
+ * Unescape text
+ * @param {str} text Text to unescape
+ */
+function unescapeText(text) {
+    const elementDiv = document.createElement('div');
+    elementDiv.innerHTML = text;
+    return elementDiv.innerText;
 }
 
 /**
@@ -272,10 +281,7 @@ function injectData(app, developer, packageName) {
     // Addng the short description
     let desc_html = "";
     if(controls.short_description) {
-        const shortDesc = shortDescription();
-        if(shortDesc != null) {
-            desc_html = desc_html_template.replace("{%SHORT_DESCRIPTION%}", shortDesc);
-        }
+        desc_html = desc_html_template.replace("{%SHORT_DESCRIPTION%}", app.short_description);
     }
 
     // App not found
@@ -301,7 +307,11 @@ function injectData(app, developer, packageName) {
     }
 
     const download_apk_html = download_app_template.replace(/{%PACKAGE_NAME%}/g, packageName)
-    const installBtnElements = $('button[aria-label="Install"]');
+    let installBtnElements = $('button[aria-label="Install"]');
+    // Bug fix for install button
+    if(installBtnElements == null) {
+        installBtnElements = $('button[aria-label="Installer"]');
+    }
     const installElem = $(installBtnElements[installBtnElements.length-1]).parent()[0];
     $(download_apk_html).insertBefore(installElem);
 
@@ -309,9 +319,9 @@ function injectData(app, developer, packageName) {
     if(controls.feature_image) {
         const featureImage = getFeatureImage();
         if(featureImage != null) {
-            const topHeaderElem = $('#aso-data').parent().parent().parent();
+            // const topHeaderElem = $('#aso-data').parent().parent().parent();
             const feature_image_html = feature_image_template.replace('{%FEATURE_IMAGE%}', featureImage);
-            $(feature_image_html).insertAfter(topHeaderElem);
+            $(feature_image_html).insertAfter('#aso-data');
         }
     }
     processing = false;
