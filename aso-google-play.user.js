@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASO Google Play
 // @namespace    https://github.com/ayoubfletcher
-// @version      2.1
+// @version      2.2
 // @description  Your tool kit to speed up your aso abilities.
 // @author       Ayoub Fletcher
 // @match        https://play.google.com/store/apps/details?id=*
@@ -307,9 +307,12 @@ function injectData(app, developer, packageName) {
     }
 
     const download_apk_html = download_app_template.replace(/{%PACKAGE_NAME%}/g, packageName)
-    let installBtnElements = $('button[aria-label="Install"]');
-    // Bug fix for install button
-    if(installBtnElements == null) {
+    // BUG fix for weird installer element, trust me it's actually weird
+    const installbtn_selector = 'button[aria-label="Install"]';
+    let installBtnElements = null;
+    if(document.querySelector(installbtn_selector) !== null) {
+        installBtnElements = $(installbtn_selector);
+    } else {
         installBtnElements = $('button[aria-label="Installer"]');
     }
     const installElem = $(installBtnElements[installBtnElements.length-1]).parent()[0];
