@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASO Google Play
 // @namespace    https://github.com/ayoubfletcher
-// @version      2.3
+// @version      2.4
 // @description  Your tool kit to speed up your aso abilities.
 // @author       Ayoub Fletcher
 // @match        https://play.google.com/store/apps/details?id=*
@@ -58,6 +58,7 @@ const controls = {
 	feature_image: true,
 	app: true,
 	dev: true,
+	related_apps: true,
 	addition_links: true
 };
 
@@ -70,6 +71,7 @@ var $ = window.$;
 const app_brain_url = 'https://www.appbrain.com/app/';
 const dev_barin_url = 'https://www.appbrain.com/dev/';
 let app_not_found = false;
+let cloudflare_detection = false;
 
 // The status of the generating
 let processing = false;
@@ -82,18 +84,19 @@ const INTERVAL_TIMER_CHECKER = 500;
  * If you want to style just do it
  */
 const styles_html =
-	"<style>#aso-data{padding: 10px 0; text-align: center;}#aso-data i{margin-top: 10px;}#aso-data-loading{padding: 10px; text-align: center; margin-bottom: 10px; font-weight: bold;}#honor{color: #2c1912;}#aso-data i a{color: #546e7a; font-weight: bold; -webkit-transition: all 200ms; /* Safari */ transition: all 200ms;}#aso-data i a:hover{color: #29434e;}#app-data,#dev-data{text-align: center; padding: 5px;}#aso-data li{display: inline-block; width: 110px; margin: 0 3px; margin-bottom: 10px; background: #F7F7F7}.icon{height: 50px; background-position: 50% 50%; background-repeat: no-repeat; background-size: contain; position: relative}.app-age{background-color: #04B5B0; background-image: url('https://www.appbrain.com/static/images/infotile-age.png')}.app-installs{background-color: #069bf7; background-image: url('https://www.appbrain.com/static/images/infotile-download.png')}.app-ranking{background-color: #F4460A; background-position: 0 50%; background-image: url('https://www.appbrain.com/static/images/infotile-ranking.png')}.app-size{background-color: #EA6E00; background-image: url('https://www.appbrain.com/static/images/infotile-size.png')}.app-update{background-color: #e6a509; background-image: url('https://www.appbrain.com/static/images/infotile-update.png')}.app-android{background-color: #EB008B; background-image: url('https://www.appbrain.com/static/images/infotile-android.png')}.dev-age{background-color: #1E88E5; background-image: url('https://www.appbrain.com/static/images/infotile-age.png')}.dev-total-installs{background-color: #E65100; background-image: url('https://www.appbrain.com/static/images/infotile-download.png')}.dev-total-apps{background-color: #EB008B; background-image: url('https://www.appbrain.com/static/images/infotile-appcount.png')}.dev-average-rating{background-color: #80af3f; background-image: url('https://www.appbrain.com/static/images/infotile-rating.png')}.dev-recent-rating{background-color: #80af3f; background-image: url('https://www.appbrain.com/static/images/infotile-recent-rating.png')}.dev-total-rating{background-color: #80af3f; background-image: url('https://www.appbrain.com/static/images/infotile-rating-count.png')}#aso-data .value{text-align: center; padding: 15px 5px; font-family: Arial; font-size: 12px; font-weight: bold; color: #666}#aso-data .title{text-align: center; padding: 5px; font-family: Arial; font-size: 13px; color: #999; border-top: 1px solid #E1E1E1}#aso-data .header{font-size: 18px; padding: 20px 10px; color: #666; text-transform: uppercase; font-family: Arial; font-weight: bold}#description{width: 100%; float: left; margin-bottom: 20px;}#description .content{color: #fff; padding: 10px; background: #666; font-family: Arial; font-size: 15px; text-align: center}#download_apk{font-size: 14px; height: 36px; line-height: 34px; padding: 0 20px; -webkit-border-radius: 4px; border-radius: 4px; -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05); box-shadow: 0 1px 0 rgba(0, 0, 0, 0.05); -webkit-box-sizing: border-box; box-sizing: border-box; -webkit-transition: all .2s; transition: all .2s; -webkit-user-select: none; background-color: #fff; border: 1px solid rgba(0, 0, 0, 0.17); color: #ffffff; cursor: pointer; display: inline-block; font-family: 'Roboto', sans-serif; font-size: 14px; font-style: normal; font-weight: 500; height: 36px; line-height: 34px; min-width: 40px; padding: 0 20px; position: relative; text-align: center; text-decoration: none; white-space: nowrap; vertical-align: middle; background-color: #546e7a;}#download_apk:hover{-webkit-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.27); box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.27); cursor: pointer; background-color: #29434e;}#aso-feature-image{padding-bottom: 20px; text-align: center;}#aso-feature-image i{display: block; margin-bottom: 10px; font-weight: bold;}#addition-links{margin-bottom: 20px;}#addition-links img{height: 20px;}#addition-links a{margin: 5px;font-size: 14px;font-weight: bold;}#addition-links .bg-blue-round{background: #34677C;border-radius: 5px;display: inline-block;padding: 5px;}</style>";
+	'<style>#aso-data{padding:10px 0;text-align:center}#aso-data i{margin-top:10px}#aso-data-loading{padding:10px;text-align:center;margin-bottom:10px;font-weight:700}#honor{color:#2c1912}#aso-data i a{color:#546e7a;font-weight:700;-webkit-transition:all .2s;transition:all .2s}#aso-data i a:hover{color:#29434e}#app-data,#dev-data{text-align:center;padding:5px}#aso-data li{display:inline-block;width:110px;margin:0 3px;margin-bottom:10px;background:#f7f7f7}.icon{height:50px;background-position:50% 50%;background-repeat:no-repeat;background-size:contain;position:relative}.app-age{background-color:#04b5b0;background-image:url(https://www.appbrain.com/static/images/infotile-age.png)}.app-installs{background-color:#069bf7;background-image:url(https://www.appbrain.com/static/images/infotile-download.png)}.app-ranking{background-color:#f4460a;background-position:0 50%;background-image:url(https://www.appbrain.com/static/images/infotile-ranking.png)}.app-size{background-color:#ea6e00;background-image:url(https://www.appbrain.com/static/images/infotile-size.png)}.app-update{background-color:#e6a509;background-image:url(https://www.appbrain.com/static/images/infotile-update.png)}.app-android{background-color:#eb008b;background-image:url(https://www.appbrain.com/static/images/infotile-android.png)}.app-maturity{background-color:#a812cc;background-image:url(https://s.appbrain.com/static/201903201140439/images/infotile-content-rating.png)}.app-libraries{background-color:#053aa8;background-image:url(https://s.appbrain.com/static/201903201140439/images/infotile-lib.png)}.dev-age{background-color:#1e88e5;background-image:url(https://www.appbrain.com/static/images/infotile-age.png)}.dev-total-installs{background-color:#e65100;background-image:url(https://www.appbrain.com/static/images/infotile-download.png)}.dev-total-apps{background-color:#eb008b;background-image:url(https://www.appbrain.com/static/images/infotile-appcount.png)}.dev-average-rating{background-color:#80af3f;background-image:url(https://www.appbrain.com/static/images/infotile-rating.png)}.dev-recent-rating{background-color:#80af3f;background-image:url(https://www.appbrain.com/static/images/infotile-recent-rating.png)}.dev-total-rating{background-color:#80af3f;background-image:url(https://www.appbrain.com/static/images/infotile-rating-count.png)}#aso-data .value{text-align:center;padding:15px 5px;font-family:Arial;font-size:12px;font-weight:700;color:#666}#aso-data .title{text-align:center;padding:5px;font-family:Arial;font-size:13px;color:#999;border-top:1px solid #e1e1e1}#aso-data .header{font-size:18px;padding:20px 10px;color:#666;text-transform:uppercase;font-family:Arial;font-weight:700}#description{width:100%;float:left;margin-bottom:20px}#description .content{color:#fff;padding:10px;background:#666;font-family:Arial;font-size:15px;text-align:center}#download_apk{font-size:14px;height:36px;line-height:34px;padding:0 20px;-webkit-border-radius:4px;border-radius:4px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.05);box-shadow:0 1px 0 rgba(0,0,0,.05);-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-transition:all .2s;transition:all .2s;-webkit-user-select:none;background-color:#fff;border:1px solid rgba(0,0,0,.17);color:#fff;cursor:pointer;display:inline-block;font-family:Roboto,sans-serif;font-size:14px;font-style:normal;font-weight:500;height:36px;line-height:34px;min-width:40px;padding:0 20px;position:relative;text-align:center;text-decoration:none;white-space:nowrap;vertical-align:middle;background-color:#546e7a}#download_apk:hover{-webkit-box-shadow:0 1px 0 0 rgba(0,0,0,.27);box-shadow:0 1px 0 0 rgba(0,0,0,.27);cursor:pointer;background-color:#29434e}#aso-feature-image{padding-bottom:20px;text-align:center}#aso-feature-image i{display:block;margin-bottom:10px;font-weight:700}#addition-links{margin-bottom:20px}#addition-links img{height:20px}#addition-links a{margin:5px;font-size:14px;font-weight:700}#addition-links .bg-blue-round{background:#34677c;border-radius:5px;display:inline-block;padding:5px}#related-apps .app-tile{display:inline-block;color:#666;text-decoration:none;border-style:solid;border-width:1px;border-color:#e4e4e4;background-color:#f7f7f7;margin:.2rem;width:8rem;padding:.2rem;text-align:left;white-space:nowrap;font-size:.9rem;line-height:1.3rem;vertical-align:top}#related-apps .app-tile img{display:block;width:7rem;height:7rem;margin:0 auto .8rem}#related-apps .app-tile>div{overflow:hidden}#related-apps .app-tile-title{font-weight:700;text-align:center}#related-apps a.app-tile>div{overflow:hidden}#related-apps .app-tile-developer{margin-bottom:.4rem;text-align:center}#related-apps a.app-tile>div{overflow:hidden}#related-apps .table-div{display:table}#related-apps .app-tile .td{vertical-align:middle}#related-apps .td{display:table-cell}#related-apps .app-tile-rating{width:2rem;height:2rem;color:#fff;text-align:center;line-height:2rem;font-weight:700;border-radius:50%;margin-right:.6rem}#related-apps .app-tile-info{font-size:.9rem;line-height:1rem}#support-me{margin:15px;text-align:center}#support-me a{text-decoration:none;padding:7px;background:#069bf7;border-radius:5px;color:#fff;font-size:15px;transition:all .2s}#support-me a:hover{background:#0873b6}</style>';
 const aso_html_template =
-	"<div id='aso-data'>{%DATA_HTML%} <i>Made by <a href='https://github.com/ayoubfletcher/ASO-Google-Play'>Ayoub Fletcher</a> with LOVE ❤️.</i><p>Honorable Mention <b id='honor'>Re-skinning</b> 🕷️.</p></div>";
+	"<div id='aso-data'>{%DATA_HTML%} <i>Made by <a href='https://github.com/ayoubfletcher/ASO-Google-Play'>Ayoub Fletcher</a> with LOVE ❤️.</i><p>Honorable Mention <b id='honor'>Re-skinning</b> 🕷️.</p><div id='support-me'><a href='https://www.paypal.me/ayoubfletcher'>☕ Buy Me A Coffee</a></div></div>";
 const desc_html_template = "<ul id='description'><div class='content'>{%SHORT_DESCRIPTION%}</div></ul>";
 const aso_html_loading_template = "<div id='aso-data-loading'>LOADING DATA 👾 ...</div>";
 const app_html_template =
-	"<ul id='app-data'> <div class='header'> App Information</div><li> <div class='top'> <div class='icon app-installs'></div><div class='value'>{%APP_INSTALLS%}</div><div class='title'>App Installs</div></div></li><li> <div class='top'> <div class='icon app-age'></div><div class='value'>{%APP_AGE%}</div><div class='title'>App Age</div></div></li><li> <div class='top'> <div class='icon app-ranking'></div><div class='value'>{%RANKING%}</div><div class='title'>Ranking</div></div></li><li> <div class='top'> <div class='icon app-size'></div><div class='value'>{%APP_SIZE%}</div><div class='title'>App Size</div></div></li><li> <div class='top'> <div class='icon app-update'></div><div class='value'>{%LAST_UPDATE%}</div><div class='title'>Last Update</div></div></li><li> <div class='top'> <div class='icon app-android'></div><div class='value'>{%ANDROID_VERSION%}</div><div class='title'>Android Version</div></div></li></ul>";
+	"<ul id='app-data'> <div class='header'> App Information</div><li> <div class='top'> <div class='icon app-installs'></div><div class='value'>{%APP_INSTALLS%}</div><div class='title'>App Installs</div></div></li><li> <div class='top'> <div class='icon app-age'></div><div class='value'>{%APP_AGE%}</div><div class='title'>App Age</div></div></li><li> <div class='top'> <div class='icon app-ranking'></div><div class='value'>{%RANKING%}</div><div class='title'>Ranking</div></div></li><li> <div class='top'> <div class='icon app-size'></div><div class='value'>{%APP_SIZE%}</div><div class='title'>App Size</div></div></li><li> <div class='top'> <div class='icon app-update'></div><div class='value'>{%LAST_UPDATE%}</div><div class='title'>Last Update</div></div></li><li> <div class='top'> <div class='icon app-android'></div><div class='value'>{%ANDROID_VERSION%}</div><div class='title'>Android Version</div></div></li><li> <div class='top'> <div class='icon app-maturity'></div><div class='value'>{%ANDROID_MATURITY%}</div><div class='title'>Maturity</div></div></li><li> <div class='top'> <div class='icon app-libraries'></div><div class='value'>{%ANDROID_LIBRARIES%}</div><div class='title'>Libraries</div></div></li></ul>";
 const dev_html_template =
 	"<ul id='dev-data'> <div class='header'> Developer Information</div><li> <div class='top'> <div class='icon dev-age'></div><div class='value'>{%DEVELOPER_AGE%}</div><div class='title'>Active since</div></div></li><li> <div class='top'> <div class='icon dev-total-apps'></div><div class='value'>{%TOTAL_APPS%}</div><div class='title'>Total apps</div></div></li><li> <div class='top'> <div class='icon dev-total-installs'></div><div class='value'>{%TOTAL_INSTALLS%}</div><div class='title'>Installs</div></div></li><li> <div class='top'> <div class='icon dev-average-rating'></div><div class='value'>{%AVERAGE_RATING%}</div><div class='title'>Average rating</div></div></li><li> <div class='top'> <div class='icon dev-recent-rating'></div><div class='value'>{%RECENT_RATING%}</div><div class='title'>Recent rating</div></div></li><li> <div class='top'> <div class='icon dev-total-rating'></div><div class='value'>{%TOTAL_RATING%}</div><div class='title'>Rating total</div></div></li></ul>";
 const download_app_template =
 	"<a id='download_apk' href='https://apkpure.com/{%PACKAGE_NAME%}/{%PACKAGE_NAME%}/download?from=details'>Download APK</a>";
 const feature_image_template = "<div id='aso-feature-image'><i>Feature Image:</i><img src='{%FEATURE_IMAGE%}' /></div>";
+const related_apps_template = "<div id='related-apps'><div class='header'>Related Apps</div>{%RELATED_APPS%}</div>";
 const addition_sources_template =
 	"<div id='addition-links'> <div class='header'> ASO Tools</div> <a href='https://www.similarweb.com/app/google-play/{%PACKAGE_NAME%}/statistics'><img src='https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/SimilarWeb_logo.svg/2000px-SimilarWeb_logo.svg.png'/></a> <a href='https://www.appannie.com/apps/google-play/app/{%PACKAGE_NAME%}/keywords/'><img src='https://static-t.aa-cdn.net/mkt/assets/img/aa-header-logo.png'/></a> <a href='https://www.apptweak.com/applications/android/{%PACKAGE_NAME%}?country=us'><img src='https://www.apptweak.com/assets/logo.svg'/></a> <a class='bg-blue-round' href='https://www.applyzer.com/main.php?mmenu=rankings&submenu=getRanking&app={%PACKAGE_NAME%}&market=4'><img src='https://www.applyzer.com/_elements/APPlyzerLogoHead.svg'/></a> <a href='https://www.appbrain.com/app/{%PACKAGE_NAME%}'><img src='https://s.appbrain.com/static/201902081521271/images/appbrain_logo.png'/> AppBrain</a></div>";
 
@@ -101,8 +104,11 @@ const addition_sources_template =
  * Messages feedback change if you want to.
  */
 const app_not_found_msg = 'SORRY, APP PAGE NOT FOUND ON APPBRAIN 😓!';
+const cloudflare_detection_msg =
+	"Sorry, you've been arrested by 👮(CloudFlare). You are charged in extracting data from appbrain, to prevent from going to the jail visit app page directly on app brain from the link below and prove them that you are not a 🤖 and refresh the page or do whatever you want i warned you 🤷‍.<br><div id='addition-links' style='margin-top: 10px; margin-bottom: 0;'><a href='https://www.appbrain.com/app/{%PACKAGE_NAME%}'><img src='https://s.appbrain.com/static/201902081521271/images/appbrain_logo.png'> AppBrain</a></div>";
 const fetching_app_info_msg = 'GETTING APP INFORMATIONS FROM APPBRAIN 👺 ...';
 const fetching_dev_info_msg = 'GETTING DEVELOPER INFORMATIONS FROM APPBRAIN 🕵️‍♀️ ...';
+let error_msg = '';
 
 /**
  * Promise method to get http request
@@ -117,7 +123,7 @@ function getHttpRequest(url) {
 				if (response.status == 200) {
 					resolve(response.responseText);
 				} else {
-					reject('There was an error requesting: ' + url);
+					reject(response.status);
 				}
 			}
 		});
@@ -130,10 +136,36 @@ function getHttpRequest(url) {
  */
 function extractField(selector) {
 	if (selector.find('.infotile-text-solo').length) {
-		return selector.find('.infotile-text-solo').text().trim();
+		const valueTxt = selector.find('.infotile-text-solo').text().trim();
+		if (valueTxt.length && valueTxt !== '?') {
+			return valueTxt;
+		} else {
+			return 'Unknown';
+		}
 	} else {
-		return selector.find('.infotile-text').text().trim() + ' ' + selector.find('.infotile-subtext').text().trim();
+		const valueTxt =
+			selector.find('.infotile-text').text().trim() + ' ' + selector.find('.infotile-subtext').text().trim();
+		if (valueTxt.trim().length && valueTxt.trim() !== '?') {
+			return valueTxt;
+		} else {
+			return 'Unknown';
+		}
 	}
+}
+
+/**
+ * Extract the related apps
+ * @param html_src html src
+ */
+function extractRelatedApps(html_src) {
+	const selector = $($(html_src).find('.app-tiles-block')[0]);
+	selector.find('a').each((_, x) => {
+		const pkgName = $(x).attr('href').split('/')[$(x).attr('href').split('/').length - 1];
+		if (pkgName !== undefined) {
+			$(x).attr('href', 'https://play.google.com/store/apps/details?id=' + pkgName);
+		}
+	});
+	return selector.html();
 }
 
 /**
@@ -172,13 +204,16 @@ function generateASO() {
 							size: extractField(data.find('.infotile-top-size').parent()),
 							update: extractField(data.find('.infotile-top-lastupdated').parent()),
 							android_version: extractField(data.find('.infotile-top-androidversion').parent()),
-							short_description: $(result).find('.app-short-description').text()
+							libraries: extractField(data.find('.infotile-top-libraries').parent()),
+							maturity: extractField(data.find('.infotile[tooltip="Google Play content rating."]')),
+							short_description: $(result).find('.app-short-description').text(),
+							related_apps: extractRelatedApps(result)
 						};
 					}
 					resolve();
 				})
-				.catch((_) => {
-					reject();
+				.catch((status_code) => {
+					reject(status_code);
 				});
 		} else {
 			resolve();
@@ -219,10 +254,17 @@ function generateASO() {
 			// Inject the data into page
 			injectData(app, dev, package_name);
 		})
-		.catch((_) => {
-			// Inject the data into page
+		.catch((status_code) => {
+			if (status_code === 503) {
+				console.log(status_code);
+				error_msg = cloudflare_detection_msg.replace(/{%PACKAGE_NAME%}/g, package_name);
+				$('#aso-data-loading').text(cloudflare_detection_msg);
+			} else {
+				error_msg = app_not_found_msg;
+				// Inject the data into page
+				$('#aso-data-loading').text(app_not_found_msg);
+			}
 			app_not_found = true;
-			$('#aso-data-loading').text(app_not_found_msg);
 			injectData(app, dev, package_name);
 		});
 }
@@ -279,14 +321,22 @@ function getFeatureImage() {
 function injectData(app, developer, packageName) {
 	// Add the app information
 	let app_html = '';
-	if (app != null) {
+	let related_apps = '';
+	if (app !== null) {
+		// App html
 		app_html = app_html_template
 			.replace('{%APP_INSTALLS%}', app.installs)
 			.replace('{%APP_AGE%}', app.age)
 			.replace('{%RANKING%}', app.ranking)
 			.replace('{%APP_SIZE%}', app.size)
 			.replace('{%LAST_UPDATE%}', app.update)
-			.replace('{%ANDROID_VERSION%}', app.android_version);
+			.replace('{%ANDROID_VERSION%}', app.android_version)
+			.replace('{%ANDROID_LIBRARIES%}', app.libraries)
+			.replace('{%ANDROID_MATURITY%}', app.maturity);
+		// Related apps
+		if (controls.related_apps && controls.app) {
+			related_apps = related_apps_template.replace('{%RELATED_APPS%}', app.related_apps);
+		}
 	}
 	// Adding  the developer information
 	let dev_html = '';
@@ -329,7 +379,8 @@ function injectData(app, developer, packageName) {
 		desc_html + // Adding the short description
 		app_html + // Adding the app information
 		dev_html + // Adding the developer information
-			addition_likns +
+		related_apps + // Related Apps
+		addition_likns + // Addition links
 			app_not_found_html // Not found
 	);
 
@@ -338,7 +389,7 @@ function injectData(app, developer, packageName) {
 
 	// Add the not found message
 	if (app_not_found) {
-		$('#aso-data-loading').text(app_not_found_msg);
+		$('#aso-data-loading').html(error_msg);
 	}
 
 	const download_apk_html = download_app_template.replace(/{%PACKAGE_NAME%}/g, packageName);
