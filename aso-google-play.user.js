@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASO Google Play
 // @namespace    https://github.com/ayoubfletcher
-// @version      2.4
+// @version      2.4.1
 // @description  Your tool kit to speed up your aso abilities.
 // @author       Ayoub Fletcher
 // @match        https://play.google.com/store/apps/details?id=*
@@ -89,12 +89,12 @@ const aso_html_template =
 	"<div id='aso-data'>{%DATA_HTML%} <i>Made by <a href='https://github.com/ayoubfletcher/ASO-Google-Play'>Ayoub Fletcher</a> with LOVE ❤️.</i><p>Honorable Mention <b id='honor'>Re-skinning</b> 🕷️.</p><div id='support-me'><a href='https://www.paypal.me/ayoubfletcher'>☕ Buy Me A Coffee</a></div></div>";
 const desc_html_template = "<ul id='description'><div class='content'>{%SHORT_DESCRIPTION%}</div></ul>";
 const aso_html_loading_template = "<div id='aso-data-loading'>LOADING DATA 👾 ...</div>";
-const app_html_template =
-	"<ul id='app-data'> <div class='header'> App Information</div><li> <div class='top'> <div class='icon app-installs'></div><div class='value'>{%APP_INSTALLS%}</div><div class='title'>App Installs</div></div></li><li> <div class='top'> <div class='icon app-age'></div><div class='value'>{%APP_AGE%}</div><div class='title'>App Age</div></div></li><li> <div class='top'> <div class='icon app-ranking'></div><div class='value'>{%RANKING%}</div><div class='title'>Ranking</div></div></li><li> <div class='top'> <div class='icon app-size'></div><div class='value'>{%APP_SIZE%}</div><div class='title'>App Size</div></div></li><li> <div class='top'> <div class='icon app-update'></div><div class='value'>{%LAST_UPDATE%}</div><div class='title'>Last Update</div></div></li><li> <div class='top'> <div class='icon app-android'></div><div class='value'>{%ANDROID_VERSION%}</div><div class='title'>Android Version</div></div></li><li> <div class='top'> <div class='icon app-maturity'></div><div class='value'>{%ANDROID_MATURITY%}</div><div class='title'>Maturity</div></div></li><li> <div class='top'> <div class='icon app-libraries'></div><div class='value'>{%ANDROID_LIBRARIES%}</div><div class='title'>Libraries</div></div></li></ul>";
-const dev_html_template =
-	"<ul id='dev-data'> <div class='header'> Developer Information</div><li> <div class='top'> <div class='icon dev-age'></div><div class='value'>{%DEVELOPER_AGE%}</div><div class='title'>Active since</div></div></li><li> <div class='top'> <div class='icon dev-total-apps'></div><div class='value'>{%TOTAL_APPS%}</div><div class='title'>Total apps</div></div></li><li> <div class='top'> <div class='icon dev-total-installs'></div><div class='value'>{%TOTAL_INSTALLS%}</div><div class='title'>Installs</div></div></li><li> <div class='top'> <div class='icon dev-average-rating'></div><div class='value'>{%AVERAGE_RATING%}</div><div class='title'>Average rating</div></div></li><li> <div class='top'> <div class='icon dev-recent-rating'></div><div class='value'>{%RECENT_RATING%}</div><div class='title'>Recent rating</div></div></li><li> <div class='top'> <div class='icon dev-total-rating'></div><div class='value'>{%TOTAL_RATING%}</div><div class='title'>Rating total</div></div></li></ul>";
 const download_app_template =
 	"<a id='download_apk' href='https://apkpure.com/{%PACKAGE_NAME%}/{%PACKAGE_NAME%}/download?from=details'>Download APK</a>";
+const app_html_template =
+	"<ul id='app-data'>" + download_app_template +" <div class='header'> App Information</div><li> <div class='top'> <div class='icon app-installs'></div><div class='value'>{%APP_INSTALLS%}</div><div class='title'>App Installs</div></div></li><li> <div class='top'> <div class='icon app-age'></div><div class='value'>{%APP_AGE%}</div><div class='title'>App Age</div></div></li><li> <div class='top'> <div class='icon app-ranking'></div><div class='value'>{%RANKING%}</div><div class='title'>Ranking</div></div></li><li> <div class='top'> <div class='icon app-size'></div><div class='value'>{%APP_SIZE%}</div><div class='title'>App Size</div></div></li><li> <div class='top'> <div class='icon app-update'></div><div class='value'>{%LAST_UPDATE%}</div><div class='title'>Last Update</div></div></li><li> <div class='top'> <div class='icon app-android'></div><div class='value'>{%ANDROID_VERSION%}</div><div class='title'>Android Version</div></div></li><li> <div class='top'> <div class='icon app-maturity'></div><div class='value'>{%ANDROID_MATURITY%}</div><div class='title'>Maturity</div></div></li><li> <div class='top'> <div class='icon app-libraries'></div><div class='value'>{%ANDROID_LIBRARIES%}</div><div class='title'>Libraries</div></div></li></ul>";
+const dev_html_template =
+	"<ul id='dev-data'> <div class='header'> Developer Information</div><li> <div class='top'> <div class='icon dev-age'></div><div class='value'>{%DEVELOPER_AGE%}</div><div class='title'>Active since</div></div></li><li> <div class='top'> <div class='icon dev-total-apps'></div><div class='value'>{%TOTAL_APPS%}</div><div class='title'>Total apps</div></div></li><li> <div class='top'> <div class='icon dev-total-installs'></div><div class='value'>{%TOTAL_INSTALLS%}</div><div class='title'>Installs</div></div></li><li> <div class='top'> <div class='icon dev-average-rating'></div><div class='value'>{%AVERAGE_RATING%}</div><div class='title'>Average rating</div></div></li><li> <div class='top'> <div class='icon dev-recent-rating'></div><div class='value'>{%RECENT_RATING%}</div><div class='title'>Recent rating</div></div></li><li> <div class='top'> <div class='icon dev-total-rating'></div><div class='value'>{%TOTAL_RATING%}</div><div class='title'>Rating total</div></div></li></ul>";
 const feature_image_template = "<div id='aso-feature-image'><i>Feature Image:</i><img src='{%FEATURE_IMAGE%}' /></div>";
 const related_apps_template = "<div id='related-apps'><div class='header'>Related Apps</div>{%RELATED_APPS%}</div>";
 const addition_sources_template =
@@ -173,8 +173,7 @@ function extractRelatedApps(html_src) {
  */
 function generateASO() {
 	// Inject loading
-	let titleElements = $('h1');
-	const elemTarget = $(titleElements[titleElements.length - 2]).parent().parent().parent().parent().parent()[0];
+	const elemTarget = $('h1').parent().parent().parent().parent().parent();
 	const aso_html = aso_html_template.replace('{%DATA_HTML%}', aso_html_loading_template);
 	// Injecting styles
 	$(styles_html).insertAfter(elemTarget);
@@ -384,6 +383,9 @@ function injectData(app, developer, packageName) {
 			app_not_found_html // Not found
 	);
 
+    // Add package to download
+    aso_html = aso_html.replace(/{%PACKAGE_NAME%}/g, packageName);
+
 	// Inject result
 	$('#aso-data').html(aso_html);
 
@@ -391,18 +393,6 @@ function injectData(app, developer, packageName) {
 	if (app_not_found) {
 		$('#aso-data-loading').html(error_msg);
 	}
-
-	const download_apk_html = download_app_template.replace(/{%PACKAGE_NAME%}/g, packageName);
-	// BUG fix for weird installer element, trust me it's actually weird
-	const installbtn_selector = 'button[aria-label="Install"]';
-	let installBtnElements = null;
-	if (document.querySelector(installbtn_selector) !== null) {
-		installBtnElements = $(installbtn_selector);
-	} else {
-		installBtnElements = $('button[aria-label="Installer"]');
-	}
-	const installElem = $(installBtnElements[installBtnElements.length - 1]).parent()[0];
-	$(download_apk_html).insertBefore(installElem);
 
 	// Inject feature image
 	if (controls.feature_image) {
