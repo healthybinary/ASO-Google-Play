@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         ASO Google Play
+// @name         ASO Google Play Helper Tool
 // @namespace    https://github.com/ayoubfletcher
-// @version      3.0.1
-// @description  Your tool kit to speed up your aso abilities.
+// @version      3.0.2
+// @description  ASO Google Play Helper tool, it's a tool to simplify and helping in ASO and analyzing Android apps in google play.
 // @icon         https://raw.githubusercontent.com/ayoubfletcher/ASO-Google-Play/master/static/icon-script.png
 // @author       Ayoub Fletcher
 // @match        https://play.google.com/store/apps/details?id=*
@@ -472,18 +472,7 @@ function extractKeywords(resultDom) {
 }
 
 function initGplayJS() {
-	document.querySelector('body').insertBefore(evaluateHtml(aso_add_later_code), document.querySelector('body').children[document.querySelector('body').children.length-1]);
-
 	
-        let package_name;
-        if(location.href.indexOf('play.google.com') > -1) {
-            package_name = location.href.split("?id=")[1].split("&")[0];
-        } else if (location.href.indexOf('appbrain.com/app/') > -1 || location.href.indexOf('appstorespy.com') > -1) {
-            package_name = location.href.split('/')[location.href.split('/').length-1].split('?')[0].split('#')[0];
-        } else {
-            package_name = 'com.example.debugging';
-        }
-
         document.querySelectorAll("#aso-data-container .expande-toggle").forEach(function (elem) {
             const expandableHiddenElems = elem.parentNode.querySelectorAll(".expandable-hidden");
             if (expandableHiddenElems.length > 1) {
@@ -510,6 +499,21 @@ function initGplayJS() {
                 }
             })
         })
+    
+}
+
+function initAddToListJS() {
+	document.querySelector('body').insertBefore(evaluateHtml(aso_add_later_code), document.querySelector('body').children[document.querySelector('body').children.length-1]);
+
+	
+        let package_name;
+        if(location.href.indexOf('play.google.com') > -1) {
+            package_name = location.href.split("?id=")[1].split("&")[0];
+        } else if (location.href.indexOf('appbrain.com/app/') > -1 || location.href.indexOf('appstorespy.com') > -1) {
+            package_name = location.href.split('/')[location.href.split('/').length-1].split('?')[0].split('#')[0];
+        } else {
+            package_name = 'com.example.debugging';
+        }
 
         const clearCacheBtn = document.querySelector('#clear-cache');
         if(clearCacheBtn != null) {
@@ -796,6 +800,8 @@ function injectData(app_data) {
 		if(app_brain_data.is_limited) {
 			errors.push(app_brain_limit_error);
 		}
+
+		initGplayJS();
 	} else {
 		switch(app_brain.status) {
 			case 404:
@@ -929,7 +935,7 @@ function run() {
 			}
 		}, INTERVAL_TIMER_CHECKER);
 	}
-	initGplayJS();
+	initAddToListJS();
 }
 
 /** Main method script */
