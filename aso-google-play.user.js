@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASO Google Play Helper Tool
 // @namespace    https://github.com/ayoubfletcher
-// @version      3.0.2
+// @version      3.0.4
 // @description  ASO Google Play Helper tool, it's a tool to simplify and helping in ASO and analyzing Android apps in google play.
 // @icon         https://raw.githubusercontent.com/ayoubfletcher/ASO-Google-Play/master/static/icon-script.png
 // @author       Ayoub Fletcher
@@ -231,7 +231,7 @@ function scrapeAppBrain(package_name) {
 				changeLogs: extractChangeLogs(resultDom),
 				short_description: null,
 				keywords: extractKeywords(resultDom),
-				is_limited: resultDom.querySelector(".paywall-overlay") == null
+				is_limited: resultDom.querySelector(".paywall-overlay") != null
 			};
 		
 			const shortDescElem = resultDom.querySelector(".app-short-description");
@@ -355,19 +355,12 @@ function generateASO() {
 	Promise.all(request_data).then(values => {
 		let [ app_brain, app_store ] = values;
 
-		let cache_obj = {
-			app_brain,
-			app_store
-		};
-
-		if(cache_obj.app_brain.status) {
-			cache_obj.app_brain = null;
+		if(app_brain.status === 200 || app_store.status === 200) {
+			GM_setValue(cache_name, {
+				app_brain,
+				app_store
+			});
 		}
-		if(cache_obj.app_store.status) {
-			cache_obj.app_store = null;
-		}
-
-		GM_setValue(cache_name, cache_obj);
 	
 		injectData({
 			app_brain,
@@ -910,14 +903,14 @@ function run() {
 		// Remove the blur
 		if (document.querySelector(".blurred") != null) {
 			document.querySelector(".blurred").classList.remove("blurred");
+			// Add a notice for the paywall
+			const mainContentElem = document.querySelector(".main-contents");
+			const htmlCode = `<div class="alert alert-danger" style="text-align: center;">
+				You have reached your daily pageview limit for AppBrain. This is a custom notice made by the script <a href="https://github.com/ayoubfletcher/ASO-Google-Play" target="_blank">Github Link</a>, We've hided that deadly paywall thing, that's why it doesn't show up.
+			</div>`;
+			mainContentElem.parentElement.insertBefore(evaluateHtml(htmlCode), mainContentElem);
 		}
-		// Add a notice for the paywall
-		const mainContentElem = document.querySelector(".main-contents");
-		const htmlCode = `<div class="alert alert-danger" style="text-align: center;">
-			You have reached your daily pageview limit for AppBrain. This is a custom notice made by the script <a href="https://github.com/ayoubfletcher/ASO-Google-Play" target="_blank">Github Link</a>, We've hided that deadly paywall thing, that's why it doesn't show up. Seriously looks nasty.
-		</div>`
-		document.querySelector('body').insertBefore(evaluateHtml(htmlCode), document.querySelector('body').children[document.querySelector('body').children.length-1]);
-
+		
 		// To add download to appbrain.
 		addDownloadLinkToAppBrain();
 		
