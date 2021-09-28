@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASO Google Play Helper Tool
 // @namespace    https://github.com/ayoubfletcher
-// @version      3.0.4
+// @version      3.0.5
 // @description  ASO Google Play Helper tool, it's a tool to simplify and helping in ASO and analyzing Android apps in google play.
 // @icon         https://raw.githubusercontent.com/ayoubfletcher/ASO-Google-Play/master/static/icon-script.png
 // @author       Ayoub Fletcher
@@ -231,7 +231,7 @@ function scrapeAppBrain(package_name) {
 				changeLogs: extractChangeLogs(resultDom),
 				short_description: null,
 				keywords: extractKeywords(resultDom),
-				is_limited: resultDom.querySelector(".paywall-overlay") != null
+				is_limited: resultDom.querySelector(".blurred") != null
 			};
 		
 			const shortDescElem = resultDom.querySelector(".app-short-description");
