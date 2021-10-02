@@ -1,7 +1,7 @@
 // ==UserScript==
-// @name         ASO Google Play Helper Tool
+// @name         ASO Google Play
 // @namespace    https://github.com/ayoubfletcher
-// @version      3.0.6
+// @version      3.0.6.1
 // @description  ASO Google Play Helper tool, it's a tool to simplify and helping in ASO and analyzing Android apps in google play.
 // @icon         https://raw.githubusercontent.com/ayoubfletcher/ASO-Google-Play/master/static/icon-script.png
 // @author       Ayoub Fletcher
