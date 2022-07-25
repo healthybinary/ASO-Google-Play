@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ASO Google Play
 // @namespace    https://github.com/ayoubfletcher
-// @version      3.1.2
+// @version      3.1.3
 // @description  ASO Google Play Helper tool, it's a tool to simplify and helping in ASO and analyzing Android apps in google play.
 // @icon         https://raw.githubusercontent.com/ayoubfletcher/ASO-Google-Play/master/static/icon-script.png
 // @author       Ayoub Fletcher
@@ -1078,8 +1078,17 @@ function run() {
 		// Check if the current id not the same
 		if (document.getElementById("aso-data") == null && !processing) {
 			processing = true;
-			generateASO();
-			scriptUpdateChecker();
+			
+			let headerNodeElem = document.querySelector('h1').parentNode;
+			for (let x = 0; x < 7; x++) {
+				headerNodeElem = headerNodeElem.parentNode;
+			}
+		
+			const appDivContainer = document.createElement('div');
+			appDivContainer.id = "aso-data";
+			appDivContainer.innerHTML = `<p style="padding: 10px; text-align:center;font-size: 17px;color:#c12323; line-height:1.5em;">The Tampermonkey got deprecated. It've been migrated to the browser extension for better integration and safe updates.<br>Visit the Github URL for more information: <br><a href="https://github.com/ayoubfletcher/ASO-Google-Play" target="_blank">https://github.com/ayoubfletcher/ASO-Google-Play</a>.</p>`
+			headerNodeElem.insertBefore(appDivContainer, headerNodeElem.childNodes[headerNodeElem.childNodes.length - 1]);
+
 		}
 		setInterval(function () {
 			if (current_app_url != location.href) {
